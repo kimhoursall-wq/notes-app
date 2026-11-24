@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes Admin</title>
+<style>
+  :root{--bg:#f6f5fb;--card:#fff;--ink:#1c1b2e;--muted:#6b6a80;--line:#e6e4f2;--brand:#4f46e5;--brand-d:#4338ca;--soft:#eeecff;--danger:#dc2626;--ok:#16a34a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+  button{font:inherit;cursor:pointer}
+  input,textarea{font:inherit;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  input:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:-1px}
+  .btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:600}
+  .btn:hover{background:var(--brand-d)}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn.danger{background:#fff;color:var(--danger);border:1px solid #fecaca;padding:7px 12px;font-weight:500}
+  .btn.danger:hover{background:#fef2f2}
+  .hidden{display:none!important}
+
+  /* login */
+  #login{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+  .l-left{background:var(--soft);padding:48px;display:flex;flex-direction:column;justify-content:center}
+  .logo{width:48px;height:48px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:24px;margin-bottom:40px}
+  .eyebrow{letter-spacing:.14em;font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase}
+  .l-left h1{font-family:Georgia,serif;font-size:44px;line-height:1.1;margin:12px 0}
+  .l-left p{color:var(--muted);max-width:360px}
+  .l-right{display:flex;align-items:center;justify-content:center;padding:32px}
+  .l-box{width:100%;max-width:380px}
+  .l-box h2{font-family:Georgia,serif;font-size:34px;margin:6px 0 4px}
+  .l-box label{display:block;font-size:13px;font-weight:600;margin:16px 0 6px}
+  .l-box .btn{width:100%;margin-top:22px;padding:13px}
+  .err{color:var(--danger);font-size:14px;margin-top:12px;min-height:18px}
+  @media(max-width:800px){#login{grid-template-columns:1fr}.l-left{display:none}}
+
+  /* app */
+  #app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+  aside{background:#fff;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:6px}
+  aside .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:22px}
+  aside .brand .logo{width:34px;height:34px;font-size:18px;margin:0;border-radius:9px}
+  .nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);border:0;background:none;text-align:left;width:100%;font-weight:600}
+  .nav.active,.nav:hover{background:var(--soft);color:var(--brand)}
+  aside .spacer{flex:1}
+  .who{font-size:12px;color:var(--muted);padding:8px 12px;word-break:break-all}
+  main{padding:28px 32px;max-width:1100px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+  .top h1{margin:0;font-size:26px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:99px;background:#dcfce7;color:#166534}
+  .badge.bad{background:#fee2e2;color:#991b1b}
+  .badge i{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card .k{font-size:13px;color:var(--muted);font-weight:600}
+  .card .v{font-size:30px;font-weight:800;margin-top:6px}
+  .card .v.s{font-size:18px;margin-top:12px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px}
+  .panel h3{margin:0 0 14px;font-size:16px}
+  .bars{display:flex;align-items:flex-end;gap:12px;height:150px}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+  .bar .fill{width:100%;max-width:46px;background:var(--brand);border-radius:8px 8px 0 0;min-height:3px;opacity:.9}
+  .bar .n{font-size:12px;font-weight:700}
+  .bar .d{font-size:11px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+  td.t{font-weight:600}
+  td.c{color:var(--muted);max-width:360px;overflow-wrap:anywhere}
+  td.d{color:var(--muted);white-space:nowrap;font-size:13px}
+  .tools{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .tools input{max-width:300px}
+  .addrow{display:grid;grid-template-columns:1fr 2fr auto;gap:10px;align-items:start}
+  .addrow textarea{height:46px;resize:vertical}
+  .empty{text-align:center;color:var(--muted);padding:26px}
+  .tablewrap{overflow-x:auto}
+  @media(max-width:900px){#app{grid-template-columns:1fr}aside{flex-direction:row;flex-wrap:wrap;align-items:center;border-right:0;border-bottom:1px solid var(--line)}aside .brand{margin:0 8px 0 0}aside .spacer{display:none}.who{display:none}.cards{grid-template-columns:1fr 1fr}main{padding:18px}.addrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <div class="l-left">
+    <div class="logo">n.</div>
+    <div class="eyebrow">Notes Admin</div>
+    <h1>Manage your notes with ease.</h1>
+    <p>Sign in to see statistics and manage every note stored in the database.</p>
+  </div>
+  <div class="l-right">
+    <form class="l-box" id="loginForm">
+      <div class="eyebrow">Administration</div>
+      <h2>Admin sign in.</h2>
+      <div style="color:var(--muted);font-size:14px">Sign in with an administrator account.</div>
+      <label for="email">Email address</label>
+      <input id="email" type="email" placeholder="you@example.com" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Your password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Log in</button>
+      <div class="err" id="loginErr"></div>
+    </form>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<div id="app" class="hidden">
+  <aside>
+    <div class="brand"><div class="logo">n.</div>Notes Admin</div>
+    <button class="nav active" data-view="dash">Dashboard</button>
+    <button class="nav" data-view="notes">Notes</button>
+    <div class="spacer"></div>
+    <div class="who" id="who"></div>
+    <button class="nav" id="logout">Log out</button>
+  </aside>
+  <main>
+    <!-- Dashboard view -->
+    <div id="view-dash">
+      <div class="top">
+        <h1>Dashboard</h1>
+        <span class="badge" id="dbBadge"><i></i><span id="dbText">...</span></span>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="k">Total notes</div><div class="v" id="sTotal">0</div></div>
+        <div class="card"><div class="k">Added today</div><div class="v" id="sToday">0</div></div>
+        <div class="card"><div class="k">Latest note</div><div class="v s" id="sLatest">-</div></div>
+        <div class="card"><div class="k">Server uptime</div><div class="v s" id="sUptime">-</div></div>
+      </div>
+      <div class="panel">
+        <h3>Notes added in the last 7 days</h3>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="panel">
+        <h3>Recent notes</h3>
+        <div class="tablewrap"><table><thead><tr><th>Title</th><th>Content</th><th>Created</th></tr></thead><tbody id="recent"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Notes view -->
+    <div id="view-notes" class="hidden">
+      <div class="top"><h1>Notes</h1></div>
+      <div class="panel">
+        <h3>Add a note</h3>
+        <form class="addrow" id="addForm">
+          <input id="nTitle" placeholder="Title" required>
+          <textarea id="nContent" placeholder="Content"></textarea>
+          <button class="btn" type="submit">Add</button>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="tools"><input id="search" placeholder="Search notes..."></div>
+        <div class="tablewrap"><table><thead><tr><th>Title</th><th>Content</th><th>Created</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let token = sessionStorage.getItem('adminToken') || '';
+
+async function api(path, options = {}) {
+  const res = await fetch('/admin/api' + path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(options.headers || {}) },
+  });
+  if (res.status === 401 && path !== '/login') { logout(); throw new Error('Session expired'); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+function fmtDate(v) {
+  if (!v) return '-';
+  return new Date(v).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function fmtUptime(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h ? h + 'h ' + m + 'm' : m + 'm ' + (s % 60) + 's';
+}
+function cell(cls, text) {
+  const td = document.createElement('td');
+  if (cls) td.className = cls;
+  td.textContent = text;
+  return td;
+}
+function emptyRow(body, cols, text) {
+  const tr = document.createElement('tr');
+  const td = document.createElement('td');
+  td.colSpan = cols; td.className = 'empty'; td.textContent = text;
+  tr.appendChild(td); body.appendChild(tr);
+}
+
+/* ---- auth ---- */
+function showApp() {
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  loadDash();
+}
+function logout() {
+  token = ''; sessionStorage.removeItem('adminToken');
+  $('app').classList.add('hidden'); $('login').classList.remove('hidden');
+}
+$('logout').onclick = logout;
+
+$('loginForm').onsubmit = async (e) => {
+  e.preventDefault();
+  $('loginErr').textContent = '';
+  try {
+    const data = await api('/login', { method: 'POST', body: JSON.stringify({ email: $('email').value, password: $('password').value }) });
+    token = data.token; sessionStorage.setItem('adminToken', token);
+    $('who').textContent = data.email; sessionStorage.setItem('adminEmail', data.email);
+    $('password').value = '';
+    showApp();
+  } catch (err) { $('loginErr').textContent = err.message; }
+};
+
+/* ---- views ---- */
+document.querySelectorAll('.nav[data-view]').forEach((b) => {
+  b.onclick = () => {
+    document.querySelectorAll('.nav[data-view]').forEach((x) => x.classList.toggle('active', x === b));
+    $('view-dash').classList.toggle('hidden', b.dataset.view !== 'dash');
+    $('view-notes').classList.toggle('hidden', b.dataset.view !== 'notes');
+    b.dataset.view === 'dash' ? loadDash() : loadNotes();
+  };
+});
+
+async function loadDash() {
+  try {
+    const s = await api('/stats');
+    $('sTotal').textContent = s.total;
+    $('sToday').textContent = s.today;
+    $('sLatest').textContent = s.latestAt ? fmtDate(s.latestAt) : 'No notes yet';
+    $('sUptime').textContent = fmtUptime(s.uptimeSeconds);
+    const ok = s.db === 'connected';
+    $('dbBadge').classList.toggle('bad', !ok);
+    $('dbText').textContent = 'MongoDB ' + s.db;
+
+    const max = Math.max(1, ...s.days.map((d) => d.count));
+    const bars = $('bars'); bars.textContent = '';
+    s.days.forEach((d) => {
+      const wrap = document.createElement('div'); wrap.className = 'bar';
+      const n = document.createElement('div'); n.className = 'n'; n.textContent = d.count;
+      const f = document.createElement('div'); f.className = 'fill'; f.style.height = Math.round((d.count / max) * 100) + '%';
+      const l = document.createElement('div'); l.className = 'd';
+      l.textContent = new Date(d.date + 'T00:00:00').toLocaleDateString([], { weekday: 'short' });
+      wrap.append(n, f, l); bars.appendChild(wrap);
+    });
+
+    const notes = await api('/notes');
+    const body = $('recent'); body.textContent = '';
+    if (!notes.length) emptyRow(body, 3, 'No notes yet');
+    notes.slice(0, 5).forEach((n) => {
+      const tr = document.createElement('tr');
+      tr.append(cell('t', n.title), cell('c', n.content || ''), cell('d', fmtDate(n.createdAt)));
+      body.appendChild(tr);
+    });
+  } catch (e) { console.error(e); }
+}
+
+async function loadNotes() {
+  try {
+    const q = encodeURIComponent($('search').value.trim());
+    const notes = await api('/notes?q=' + q);
+    const body = $('rows'); body.textContent = '';
+    if (!notes.length) emptyRow(body, 4, 'No notes found');
+    notes.forEach((n) => {
+      const tr = document.createElement('tr');
+      const act = document.createElement('td');
+      const del = document.createElement('button');
+      del.className = 'btn danger'; del.textContent = 'Delete';
+      del.onclick = async () => {
+        if (!confirm('Delete this note?')) return;
+        await api('/notes/' + n._id, { method: 'DELETE' });
+        loadNotes();
+      };
+      act.appendChild(del);
+      tr.append(cell('t', n.title), cell('c', n.content || ''), cell('d', fmtDate(n.createdAt)), act);
+      body.appendChild(tr);
+    });
+  } catch (e) { console.error(e); }
+}
+
+$('addForm').onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await api('/notes', { method: 'POST', body: JSON.stringify({ title: $('nTitle').value, content: $('nContent').value }) });
+    $('nTitle').value = ''; $('nContent').value = '';
+    loadNotes();
+  } catch (err) { alert(err.message); }
+};
+
+let timer;
+$('search').oninput = () => { clearTimeout(timer); timer = setTimeout(loadNotes, 250); };
+
+/* ---- start ---- */
+if (token) { $('who').textContent = sessionStorage.getItem('adminEmail') || ''; showApp(); }
+</script>
+</body>
+</html>
